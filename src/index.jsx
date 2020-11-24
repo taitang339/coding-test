@@ -5,54 +5,57 @@ import "bootstrap/dist/css/bootstrap.css";
  
 function HousingInfoView (props){
 
-    //set error values 
-    const [error, setError] = useState(null);
-    //check if loaded
-    const [isloaded, setIsLoaded] = useState(false);
-    //set data if loaded 
+    //intialize state
     const [data, setData] = useState({ communities:null, homes: null});
 
 
     useEffect( () => {
 
+        //using axios and async function to get both request 
         const fetchData = async () => {
             const respCommunities = await axios.get("https://a18fda49-215e-47d1-9dc6-c6136a04a33a.mock.pstmn.io/communities");
             const respHomes = await axios.get("https://a18fda49-215e-47d1-9dc6-c6136a04a33a.mock.pstmn.io/homes");
 
+            //set the response data
             setData({
                 communities: respCommunities.data,
                 homes: respHomes.data
             })
         }
 
+        //handle errors 
         fetchData().catch( (error) => {
+            //Alert error for now
             alert("ERROR");
             console.log(error);
         });
     }, [])
-
-    console.log(data);
 
     function infoTable(){
 
         let communityList;
         let homeList;
         let totalPrice = 0;
-        let averagePrice = 0;
         let communityHomes;
 
         if(data.communities && data.homes){
+
             communityList = data.communities.sort((a, b) => a.name.localeCompare(b.name));
             homeList = data.homes;
-          
-            
-        
+
             communityList = data.communities.map((community)=> {
+
+                //filter homes for each community in the list
                 communityHomes = homeList.filter((home)=> home.communityId === community.id);
+
+                //check if community does exist in the home list
                 if(communityHomes.length){
+                    //use reduce to find total price of homes
                     totalPrice = communityHomes.reduce((acc, current)=>{
                         return acc + current.price; 
-                    }, 0) / communityHomes.length;
+                    }, 0);
+                }else{
+                    totalPrice = 0;
                 }
                 return (
                     <div class="col">
@@ -62,7 +65,7 @@ function HousingInfoView (props){
                             </figure>
                             <div class="card-body">
                                 <h5 class="card-title">{community.name}</h5>
-                                <p class="card-text">Average Price : {totalPrice}</p>
+                                <p class="card-text">Average Price : {new Intl.NumberFormat().format((totalPrice/communityHomes.length || 0))}</p>
                             </div>
                         </div>
                     </div>
