@@ -8,3 +8,4 @@ If i were to be given more time these are some of the things i would improve on
 - Refractoring/cleanup. I can split some of the code into another component  to make the code a little more clean. 
 - Error handling. A better way to handle error to make it more user friendly/more readable.
 - General look and feel of the page. 
+- Formatting.
